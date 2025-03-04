@@ -6,12 +6,21 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 @main
 struct TangoApp: App {
+
+    static let store = Store(initialState: LevelsFeature.State(levels: [Level(title: "1"),
+                                                                        Level(title: "2"),
+                                                                        Level(title: "3")]))
+    {
+        LevelsFeature()
+    }
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LevelsView(store: TangoApp.store)
         }
     }
 }
