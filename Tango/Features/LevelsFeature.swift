@@ -76,7 +76,7 @@ struct LevelsView: View {
             case let .startGame(store):
                 GameView(store: store)
             case let .showGameResult(store):
-                ResultView()
+                ResultView(store: store)
             }
         }
     }
