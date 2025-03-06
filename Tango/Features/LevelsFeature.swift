@@ -19,10 +19,12 @@ struct LevelsFeature {
     @ObservableState
     struct State {
         var levels: [Level]
+        var path = StackState<GameFeature.State>()
     }
 
     enum Action {
         case selectLevel(Level)
+        case path(StackActionOf<GameFeature>)
     }
 
     var body: some ReducerOf<Self> {
@@ -30,32 +32,43 @@ struct LevelsFeature {
             switch action {
             case .selectLevel:
                 return .none
+            case .path:
+                return .none
             }
+        }
+        .forEach(\.path, action: \.path) {
+            GameFeature()
         }
     }
 }
 
 struct LevelsView: View {
 
-    let store: StoreOf<LevelsFeature>
+    @Bindable var store: StoreOf<LevelsFeature>
 
     let columns = [
         GridItem(.adaptive(minimum: 80))
     ]
 
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: columns, spacing: 20) {
-                ForEach(store.levels) { item in
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.blue)
-                            .frame(width: 80, height: 80)
-                        Text(item.title)
-                            .foregroundColor(.white)
+        NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 20) {
+                    ForEach(store.levels) { level in
+                        NavigationLink(state: GameFeature.State(level: level)) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color.blue)
+                                    .frame(width: 80, height: 80)
+                                Text(level.title)
+                                    .foregroundColor(.white)
+                            }
+                        }
                     }
                 }
             }
+        } destination: { store in
+            GameView(store: store)
         }
     }
 }
