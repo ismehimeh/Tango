@@ -38,9 +38,22 @@ struct LevelsFeature {
             switch action {
             case .selectLevel:
                 return .none
-            case let .path(.element(id: id, action: .showGameResult(.tapGoToLevels))):
+            case .path(.element(_, action: .showGameResult(.tapGoToLevels))):
                 let _ = state.path.popLast()
                 let _ = state.path.popLast()
+                return .none
+            case let .path(.element(id: id, action: .showGameResult(.tapNextLevel))):
+                guard let finishedLevel = state.path[id: id]?.showGameResult?.finishedLevel else { return .none }
+
+                let finishedLevelIndex = state.levels.firstIndex { $0.id == finishedLevel.id }
+                guard let finishedLevelIndex = finishedLevelIndex else { return .none }
+                guard finishedLevelIndex + 1 < state.levels.count else { return .none }
+
+                let nextLevel = state.levels[finishedLevelIndex + 1]
+
+                let _ = state.path.popLast()
+                let _ = state.path.popLast()
+                state.path.append(.startGame(GameFeature.State(level: nextLevel)))
                 return .none
             case .path:
                 return .none

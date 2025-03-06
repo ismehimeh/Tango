@@ -26,7 +26,7 @@ struct GameView: View {
     let store: StoreOf<GameFeature>
 
     var body: some View {
-        NavigationLink(state: LevelsFeature.Path.State.showGameResult(ResultFeature.State()))
+        NavigationLink(state: LevelsFeature.Path.State.showGameResult(ResultFeature.State(finishedLevel: store.level)))
         {
             Text("Finish game")
             .navigationTitle(Text(store.level.title))

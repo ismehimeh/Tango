@@ -13,7 +13,7 @@ struct ResultFeature {
 
     @ObservableState
     struct State {
-
+        let finishedLevel: Level
     }
 
     enum Action {
@@ -42,12 +42,18 @@ struct ResultView: View {
 
     var body: some View {
         VStack {
-            Text("Play next levels")
+            Button {
+                store.send(.tapNextLevel)
+            } label: {
+                Text("Play next levels")
+            }
+
             Button {
                 store.send(.tapGoToLevels)
             } label: {
                 Text("Main Page")
             }
+
             Button {
                 store.send(.tapPop)
             } label: {
