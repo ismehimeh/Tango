@@ -38,6 +38,10 @@ struct LevelsFeature {
             switch action {
             case .selectLevel:
                 return .none
+            case let .path(.element(id: id, action: .showGameResult(.tapGoToLevels))):
+                let _ = state.path.popLast()
+                let _ = state.path.popLast()
+                return .none
             case .path:
                 return .none
             }

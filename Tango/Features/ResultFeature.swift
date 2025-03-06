@@ -43,7 +43,11 @@ struct ResultView: View {
     var body: some View {
         VStack {
             Text("Play next levels")
-            Text("Main Page")
+            Button {
+                store.send(.tapGoToLevels)
+            } label: {
+                Text("Main Page")
+            }
             Button {
                 store.send(.tapPop)
             } label: {
