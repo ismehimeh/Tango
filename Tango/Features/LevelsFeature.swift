@@ -19,12 +19,18 @@ struct LevelsFeature {
     @ObservableState
     struct State {
         var levels: [Level]
-        var path = StackState<GameFeature.State>()
+        var path = StackState<Path.State>()
     }
 
     enum Action {
         case selectLevel(Level)
-        case path(StackActionOf<GameFeature>)
+        case path(StackActionOf<Path>)
+    }
+
+    @Reducer
+    enum Path {
+        case startGame(GameFeature)
+        case showGameResult(ResultFeature)
     }
 
     var body: some ReducerOf<Self> {
@@ -36,9 +42,7 @@ struct LevelsFeature {
                 return .none
             }
         }
-        .forEach(\.path, action: \.path) {
-            GameFeature()
-        }
+        .forEach(\.path, action: \.path)
     }
 }
 
@@ -55,7 +59,7 @@ struct LevelsView: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(store.levels) { level in
-                        NavigationLink(state: GameFeature.State(level: level)) {
+                        NavigationLink(state: LevelsFeature.Path.State.startGame(GameFeature.State(level: level))) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10)
                                     .fill(Color.blue)
@@ -68,7 +72,12 @@ struct LevelsView: View {
                 }
             }
         } destination: { store in
-            GameView(store: store)
+            switch store.case {
+            case let .startGame(store):
+                GameView(store: store)
+            case let .showGameResult(store):
+                ResultView()
+            }
         }
     }
 }
