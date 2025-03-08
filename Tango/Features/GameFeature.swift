@@ -18,7 +18,28 @@ struct GameFeature {
     }
 
     enum Action {
+        case tapCell(Int, Int)
+    }
 
+    var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case let .tapCell(i, j):
+                let cell = state.gameCells[i][j]
+                guard cell.predefinedValue == nil else { return .none }
+
+                if cell.value == nil {
+                    state.gameCells[i][j].value = 0
+                }
+                else if cell.value == 0 {
+                    state.gameCells[i][j].value = 1
+                }
+                else {
+                    state.gameCells[i][j].value = nil
+                }
+                return .none
+            }
+        }
     }
 }
 
@@ -34,7 +55,7 @@ struct GameCell {
 
 struct GameView: View {
 
-    let store: StoreOf<GameFeature>
+    @Bindable var store: StoreOf<GameFeature>
 
     func cellBackgroundColor(_ i: Int, _ j: Int) -> Color {
         let cell = store.gameCells[i][j]
@@ -47,9 +68,16 @@ struct GameView: View {
 
     func cellValue(_ i: Int, _ j: Int) -> String? {
         let cell = store.gameCells[i][j]
-        guard let value = cell.predefinedValue else { return nil }
 
-        return value == 0 ? "🌞" : "🌚"
+        if let value = cell.predefinedValue {
+            return value == 0 ? "🌞" : "🌚"
+        }
+
+        if let value = cell.value {
+            return value == 0 ? "🌞" : "🌚"
+        }
+
+        return nil
     }
 
     var body: some View {
@@ -84,6 +112,9 @@ struct GameView: View {
                                             Text(value)
                                                 .font(.title)
                                         }
+                                    }
+                                    .onTapGesture {
+                                        store.send(.tapCell(i, j))
                                     }
                                 }
                             }
