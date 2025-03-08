@@ -14,6 +14,7 @@ struct GameFeature {
     @ObservableState
     struct State {
         let level: Level
+        var gameCells: [[GameCell]]
     }
 
     enum Action {
@@ -21,16 +22,37 @@ struct GameFeature {
     }
 }
 
+struct GameCell {
+    let predefinedValue: Int?
+    var value: Int?
+
+    init(predefinedValue: Int? = nil, value: Int? = nil) {
+        self.predefinedValue = predefinedValue
+        self.value = value
+    }
+}
+
 struct GameView: View {
 
     let store: StoreOf<GameFeature>
 
+    func cellBackgroundColor(_ i: Int, _ j: Int) -> Color {
+        let cell = store.gameCells[i][j]
+        if let _ = cell.predefinedValue {
+            return Color.init(red: 238 / 255.0, green: 234 / 255.0, blue: 232 / 255.0)
+        } else {
+            return .white
+        }
+    }
+
+    func cellValue(_ i: Int, _ j: Int) -> String? {
+        let cell = store.gameCells[i][j]
+        guard let value = cell.predefinedValue else { return nil }
+
+        return value == 0 ? "🌞" : "🌚"
+    }
+
     var body: some View {
-//        NavigationLink(state: LevelsFeature.Path.State.showGameResult(ResultFeature.State(finishedLevel: store.level)))
-//        {
-//            Text("Finish game")
-//            .navigationTitle(Text(store.level.title))
-//        }
         ScrollView {
             VStack {
                 HStack {
@@ -46,11 +68,31 @@ struct GameView: View {
                     .buttonStyle(.bordered)
                     .buttonBorderShape(.capsule)
                 }
-                
-                Rectangle()
-                    .foregroundStyle(Color.init(red: 234 / 255.0, green: 227 / 255.0, blue: 217 / 255.0))
-                    .aspectRatio(1, contentMode: .fit)
-                
+
+                ZStack {
+                    Rectangle()
+                        .foregroundStyle(Color.init(red: 234 / 255.0, green: 227 / 255.0, blue: 217 / 255.0))
+                        .aspectRatio(1, contentMode: .fit)
+                    Grid(horizontalSpacing: 2, verticalSpacing: 2) {
+                        ForEach(0..<6) { i in
+                            GridRow {
+                                ForEach(0..<6) { j in
+                                    ZStack {
+                                        Rectangle()
+                                            .foregroundStyle(cellBackgroundColor(i, j))
+                                        if let value = cellValue(i, j) {
+                                            Text(value)
+                                                .font(.title)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(2)
+
+                }
+
                 HStack {
                     Button {
                         print("Undo!")
@@ -124,7 +166,23 @@ struct GameView: View {
 }
 
 #Preview {
-    GameView(store: Store(initialState: GameFeature.State(level: .init(title: "8"))) {
+    GameView(store: Store(initialState: GameFeature.State(level: .init(title: "8"), gameCells: level1)) {
         GameFeature()
     })
 }
+
+
+let level1: [[GameCell]] = [
+    // 1
+    [GameCell(), GameCell(), GameCell(predefinedValue: 0), GameCell(), GameCell(), GameCell()],
+    // 2
+    [GameCell(), GameCell(predefinedValue: 1), GameCell(predefinedValue: 1), GameCell(), GameCell(), GameCell()],
+    // 3
+    [GameCell(predefinedValue: 1), GameCell(predefinedValue: 1), GameCell(), GameCell(), GameCell(), GameCell()],
+    // 4
+    [GameCell(), GameCell(), GameCell(), GameCell(), GameCell(predefinedValue: 1), GameCell(predefinedValue: 0)],
+    // 5
+    [GameCell(), GameCell(), GameCell(), GameCell(predefinedValue: 1), GameCell(predefinedValue: 0), GameCell()],
+    // 6
+    [GameCell(), GameCell(), GameCell(), GameCell(predefinedValue: 0), GameCell(), GameCell()],
+]

@@ -53,7 +53,7 @@ struct LevelsFeature {
 
                 let _ = state.path.popLast()
                 let _ = state.path.popLast()
-                state.path.append(.startGame(GameFeature.State(level: nextLevel)))
+                state.path.append(.startGame(GameFeature.State(level: nextLevel, gameCells: level1)))
                 return .none
             case .path:
                 return .none
@@ -76,7 +76,8 @@ struct LevelsView: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(store.levels) { level in
-                        NavigationLink(state: LevelsFeature.Path.State.startGame(GameFeature.State(level: level))) {
+                        // TODO: should this navigation link even be here? if we do all of this in reducer? looks like something left from the previous version
+                        NavigationLink(state: LevelsFeature.Path.State.startGame(GameFeature.State(level: level, gameCells: level1))) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10)
                                     .fill(Color.blue)
