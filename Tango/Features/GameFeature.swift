@@ -15,6 +15,7 @@ struct GameFeature {
     struct State {
         let level: Level
         var gameCells: [[GameCell]]
+        let gameConditions: [GameCellCondition]
     }
 
     enum Action {
@@ -51,6 +52,18 @@ struct GameCell {
         self.predefinedValue = predefinedValue
         self.value = value
     }
+}
+
+struct GameCellCondition: Identifiable {
+    enum Condition {
+        case equal
+        case opposite
+    }
+
+    let id = UUID()
+    let condition: Condition
+    let cellA: (Int, Int)
+    let cellB: (Int, Int)
 }
 
 struct GameView: View {
@@ -197,7 +210,7 @@ struct GameView: View {
 }
 
 #Preview {
-    GameView(store: Store(initialState: GameFeature.State(level: .init(title: "8"), gameCells: level1)) {
+    GameView(store: Store(initialState: GameFeature.State(level: .init(title: "8"), gameCells: level1, gameConditions: level1Conditions)) {
         GameFeature()
     })
 }
@@ -216,4 +229,11 @@ let level1: [[GameCell]] = [
     [GameCell(), GameCell(), GameCell(), GameCell(predefinedValue: 1), GameCell(predefinedValue: 0), GameCell()],
     // 6
     [GameCell(), GameCell(), GameCell(), GameCell(predefinedValue: 0), GameCell(), GameCell()],
+]
+
+let level1Conditions: [GameCellCondition] = [
+    .init(condition: .opposite, cellA: (0, 4), cellB: (0, 5)),
+    .init(condition: .opposite, cellA: (0, 5), cellB: (1, 5)),
+    .init(condition: .equal, cellA: (4, 0), cellB: (5, 0)),
+    .init(condition: .equal, cellA: (5, 0), cellB: (5, 1)),
 ]
