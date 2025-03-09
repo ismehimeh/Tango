@@ -69,6 +69,7 @@ struct GameCellCondition: Identifiable {
 struct GameView: View {
 
     @Bindable var store: StoreOf<GameFeature>
+    @State var cellEntries: [CellFramePreferenceKeyEntry] = []
 
     func cellBackgroundColor(_ i: Int, _ j: Int) -> Color {
         let cell = store.gameCells[i][j]
@@ -96,116 +97,143 @@ struct GameView: View {
     var body: some View {
         ScrollView {
             VStack {
-                HStack {
-                    Image(systemName: "clock")
-                    Text("0:01")
-                    Spacer()
-                    Button {
-                        print("Clear!")
-                    } label: {
-                        Text("Clear")
-                            .padding(.horizontal, 5)
-                    }
-                    .buttonStyle(.bordered)
-                    .buttonBorderShape(.capsule)
-                }
-
-                ZStack {
-                    Rectangle()
-                        .foregroundStyle(Color.init(red: 234 / 255.0, green: 227 / 255.0, blue: 217 / 255.0))
-                        .aspectRatio(1, contentMode: .fit)
-                    Grid(horizontalSpacing: 2, verticalSpacing: 2) {
-                        ForEach(0..<6) { i in
-                            GridRow {
-                                ForEach(0..<6) { j in
-                                    ZStack {
-                                        Rectangle()
-                                            .foregroundStyle(cellBackgroundColor(i, j))
-                                        if let value = cellValue(i, j) {
-                                            Text(value)
-                                                .font(.title)
-                                        }
-                                    }
-                                    .onTapGesture {
-                                        store.send(.tapCell(i, j))
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    .padding(2)
-
-                }
-
-                HStack {
-                    Button {
-                        print("Undo!")
-                    } label: {
-                        Text("Undo")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
-                    .buttonBorderShape(.capsule)
-                    
-                    Button {
-                        print("Hint!")
-                    } label: {
-                        Text("Hint")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
-                    .buttonBorderShape(.capsule)
-                }
-                
-                DisclosureGroup("How to play") {
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack {
-                            Text("•")
-                            Text("Fill the grid so that each cell contains either a 🌞 or a 🌚.")
-                        }
-                        
-                        HStack {
-                            Text("•")
-                            Text("No more than 2 🌞 or 🌚 may be next to each other, either vertically or horizontally.")
-                        }
-                        
-                        HStack {
-                            Text("•")
-                            Text("🌞🌞✅")
-                        }
-                        .padding(.leading, 20)
-                        
-                        HStack {
-                            Text("•")
-                            Text("🌞🌞🌞❌")
-                        }
-                        .padding(.leading, 20)
-                        
-                        HStack {
-                            Text("•")
-                            Text("Each row (and column) must contain the same number of 🌞 and 🌚 .")
-                        }
-                        
-                        HStack {
-                            Text("•")
-                            Text("Cells separated by an **=** sign must be of the same type.")
-                        }
-                        
-                        HStack {
-                            Text("•")
-                            Text("Cells separated by an **X** sign must be of the opposite type.")
-                        }
-                        
-                        HStack {
-                            Text("•")
-                            Text("Each puzzle has one right answer and can be solved via deduction (you should never have to make a guess).")
-                        }
-                    }
-                }
-                .frame(width: 300)
+                topView
+                gameFieldView
+                undoAndHintView
+                howToPlayView
             }
             .padding(.horizontal, 15)
         }
+    }
+
+    var topView: some View {
+        HStack {
+            Image(systemName: "clock")
+            Text("0:01")
+            Spacer()
+            Button {
+                print("Clear!")
+            } label: {
+                Text("Clear")
+                    .padding(.horizontal, 5)
+            }
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.capsule)
+        }
+    }
+
+    var gameFieldView: some View {
+        ZStack {
+            Rectangle()
+                .foregroundStyle(Color.init(red: 234 / 255.0, green: 227 / 255.0, blue: 217 / 255.0))
+                .aspectRatio(1, contentMode: .fit)
+            Grid(horizontalSpacing: 2, verticalSpacing: 2) {
+                ForEach(0..<6) { i in
+                    GridRow {
+                        ForEach(0..<6) { j in
+                            ZStack {
+                                CellView(row: i,
+                                         column: j,
+                                         backgroundColor: cellBackgroundColor(i, j),
+                                         cellContent: cellValue(i, j))
+                            }
+                            .onTapGesture {
+                                store.send(.tapCell(i, j))
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(2)
+            .onPreferenceChange(CellFramePreferenceKey.self) { value in
+                cellEntries = value
+            }
+            .coordinateSpace(name: "grid")
+
+            ZStack {
+                ForEach(store.gameConditions) { condition in
+                    let cellA = cellEntries.last(where: { $0.row == condition.cellA.0 && $0.column == condition.cellA.1})
+                    let cellB = cellEntries.last(where: { $0.row == condition.cellB.0 && $0.column == condition.cellB.1})
+                    if let cellA = cellA, let cellB = cellB {
+                        let midPoint = CGPoint(x: (cellA.rect.midX + cellB.rect.midX) / 2,
+                                               y: (cellA.rect.midY + cellB.rect.midY) / 2)
+                        ConditionView(condition: condition.condition)
+                            .position(midPoint)
+                    }
+                }
+            }
+        }
+    }
+
+    var undoAndHintView: some View {
+        HStack {
+            Button {
+                print("Undo!")
+            } label: {
+                Text("Undo")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.capsule)
+
+            Button {
+                print("Hint!")
+            } label: {
+                Text("Hint")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.capsule)
+        }
+    }
+
+    var howToPlayView: some View {
+        DisclosureGroup("How to play") {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("•")
+                    Text("Fill the grid so that each cell contains either a 🌞 or a 🌚.")
+                }
+
+                HStack {
+                    Text("•")
+                    Text("No more than 2 🌞 or 🌚 may be next to each other, either vertically or horizontally.")
+                }
+
+                HStack {
+                    Text("•")
+                    Text("🌞🌞✅")
+                }
+                .padding(.leading, 20)
+
+                HStack {
+                    Text("•")
+                    Text("🌞🌞🌞❌")
+                }
+                .padding(.leading, 20)
+
+                HStack {
+                    Text("•")
+                    Text("Each row (and column) must contain the same number of 🌞 and 🌚 .")
+                }
+
+                HStack {
+                    Text("•")
+                    Text("Cells separated by an **=** sign must be of the same type.")
+                }
+
+                HStack {
+                    Text("•")
+                    Text("Cells separated by an **X** sign must be of the opposite type.")
+                }
+
+                HStack {
+                    Text("•")
+                    Text("Each puzzle has one right answer and can be solved via deduction (you should never have to make a guess).")
+                }
+            }
+        }
+        .frame(width: 300)
     }
 }
 
@@ -237,3 +265,73 @@ let level1Conditions: [GameCellCondition] = [
     .init(condition: .equal, cellA: (4, 0), cellB: (5, 0)),
     .init(condition: .equal, cellA: (5, 0), cellB: (5, 1)),
 ]
+
+struct CellFramePreferenceKey: PreferenceKey {
+    typealias Value = [CellFramePreferenceKeyEntry]
+
+    static var defaultValue: [CellFramePreferenceKeyEntry] = []
+
+    static func reduce(value: inout [CellFramePreferenceKeyEntry],
+                       nextValue: () -> [CellFramePreferenceKeyEntry])
+    {
+        value.append(contentsOf: nextValue())
+    }
+}
+
+struct CellFramePreferenceKeyEntry: Hashable {
+    let row: Int
+    let column: Int
+    let rect: CGRect
+}
+
+struct CellView: View {
+    let row: Int
+    let column: Int
+    let backgroundColor: Color
+    let cellContent: String?
+
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .foregroundColor(backgroundColor)
+            if let text = cellContent {
+                Text(text)
+                    .font(.title)
+            }
+        }
+        .background(
+            GeometryReader { geo in
+                Color.clear
+                    .preference(
+                        key: CellFramePreferenceKey.self,
+                        value: [CellFramePreferenceKeyEntry(row: row,
+                                                            column: column,
+                                                            rect: geo.frame(in: .named("grid")))]
+                    )
+            }
+        )
+    }
+}
+
+struct ConditionView: View {
+    let condition: GameCellCondition.Condition
+
+    var body: some View {
+        Circle()
+            .frame(width: 20, height: 20)
+            .foregroundStyle(.white)
+            .overlay {
+                switch condition {
+                case .equal:
+                    Image(systemName: "equal")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(Color(red: 135 / 255.0, green: 114 / 255.0, blue: 85 / 255.0))
+                case .opposite:
+                    Image(systemName: "xmark")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(Color(red: 135 / 255.0, green: 114 / 255.0, blue: 85 / 255.0))
+                }
+            }
+    }
+}
+
