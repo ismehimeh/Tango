@@ -20,6 +20,7 @@ struct GameFeature {
 
     enum Action {
         case tapCell(Int, Int)
+        case tapClear
     }
 
     var body: some ReducerOf<Self> {
@@ -37,6 +38,13 @@ struct GameFeature {
                 }
                 else {
                     state.gameCells[i][j].value = nil
+                }
+                return .none
+            case .tapClear:
+                state.gameCells = state.gameCells.map { row in
+                    row.map { cell in
+                        GameCell(predefinedValue: cell.predefinedValue)
+                    }
                 }
                 return .none
             }
@@ -112,7 +120,7 @@ struct GameView: View {
             Text("0:01")
             Spacer()
             Button {
-                print("Clear!")
+                store.send(.tapClear)
             } label: {
                 Text("Clear")
                     .padding(.horizontal, 5)
