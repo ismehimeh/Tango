@@ -243,29 +243,6 @@ struct GameView: View {
     })
 }
 
-
-let level1: [[GameCell]] = [
-    // 1
-    [GameCell(), GameCell(), GameCell(predefinedValue: 0), GameCell(), GameCell(), GameCell()],
-    // 2
-    [GameCell(), GameCell(predefinedValue: 1), GameCell(predefinedValue: 1), GameCell(), GameCell(), GameCell()],
-    // 3
-    [GameCell(predefinedValue: 1), GameCell(predefinedValue: 1), GameCell(), GameCell(), GameCell(), GameCell()],
-    // 4
-    [GameCell(), GameCell(), GameCell(), GameCell(), GameCell(predefinedValue: 1), GameCell(predefinedValue: 0)],
-    // 5
-    [GameCell(), GameCell(), GameCell(), GameCell(predefinedValue: 1), GameCell(predefinedValue: 0), GameCell()],
-    // 6
-    [GameCell(), GameCell(), GameCell(), GameCell(predefinedValue: 0), GameCell(), GameCell()],
-]
-
-let level1Conditions: [GameCellCondition] = [
-    .init(condition: .opposite, cellA: (0, 4), cellB: (0, 5)),
-    .init(condition: .opposite, cellA: (0, 5), cellB: (1, 5)),
-    .init(condition: .equal, cellA: (4, 0), cellB: (5, 0)),
-    .init(condition: .equal, cellA: (5, 0), cellB: (5, 1)),
-]
-
 struct CellFramePreferenceKey: PreferenceKey {
     typealias Value = [CellFramePreferenceKeyEntry]
 
@@ -283,55 +260,3 @@ struct CellFramePreferenceKeyEntry: Hashable {
     let column: Int
     let rect: CGRect
 }
-
-struct CellView: View {
-    let row: Int
-    let column: Int
-    let backgroundColor: Color
-    let cellContent: String?
-
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(backgroundColor)
-            if let text = cellContent {
-                Text(text)
-                    .font(.title)
-            }
-        }
-        .background(
-            GeometryReader { geo in
-                Color.clear
-                    .preference(
-                        key: CellFramePreferenceKey.self,
-                        value: [CellFramePreferenceKeyEntry(row: row,
-                                                            column: column,
-                                                            rect: geo.frame(in: .named("grid")))]
-                    )
-            }
-        )
-    }
-}
-
-struct ConditionView: View {
-    let condition: GameCellCondition.Condition
-
-    var body: some View {
-        Circle()
-            .frame(width: 20, height: 20)
-            .foregroundStyle(.white)
-            .overlay {
-                switch condition {
-                case .equal:
-                    Image(systemName: "equal")
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(Color(red: 135 / 255.0, green: 114 / 255.0, blue: 85 / 255.0))
-                case .opposite:
-                    Image(systemName: "xmark")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(Color(red: 135 / 255.0, green: 114 / 255.0, blue: 85 / 255.0))
-                }
-            }
-    }
-}
-
