@@ -53,7 +53,7 @@ struct LevelsFeature {
 
                 let _ = state.path.popLast()
                 let _ = state.path.popLast()
-                state.path.append(.startGame(GameFeature.State(level: nextLevel, gameCells: level1, gameConditions: level1Conditions)))
+                state.path.append(.startGame(GameFeature.State(level: nextLevel, game: .init(gameCells: level1, gameConditions: level1Conditions))))
                 return .none
             case .path:
                 return .none
@@ -77,7 +77,8 @@ struct LevelsView: View {
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(store.levels) { level in
                         // TODO: should this navigation link even be here? if we do all of this in reducer? looks like something left from the previous version
-                        NavigationLink(state: LevelsFeature.Path.State.startGame(GameFeature.State(level: level, gameCells: level1, gameConditions: level1Conditions))) {
+                        // TODO: no, it is supposed to be place where you can launch different levels
+                        NavigationLink(state: LevelsFeature.Path.State.startGame(GameFeature.State(level: level, game: .init(gameCells: level1, gameConditions: level1Conditions)))) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10)
                                     .fill(Color.blue)

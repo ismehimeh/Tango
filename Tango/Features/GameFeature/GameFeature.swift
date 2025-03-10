@@ -54,8 +54,7 @@ struct GameFeature {
     @ObservableState
     struct State {
         let level: Level
-        var gameCells: [[GameCell]]
-        let gameConditions: [GameCellCondition]
+        var game: Game
     }
 
     enum Action {
@@ -67,21 +66,21 @@ struct GameFeature {
         Reduce { state, action in
             switch action {
             case let .tapCell(i, j):
-                let cell = state.gameCells[i][j]
+                let cell = state.game.gameCells[i][j]
                 guard cell.predefinedValue == nil else { return .none }
 
                 if cell.value == nil {
-                    state.gameCells[i][j].value = 0
+                    state.game.gameCells[i][j].value = 0
                 }
                 else if cell.value == 0 {
-                    state.gameCells[i][j].value = 1
+                    state.game.gameCells[i][j].value = 1
                 }
                 else {
-                    state.gameCells[i][j].value = nil
+                    state.game.gameCells[i][j].value = nil
                 }
                 return .none
             case .tapClear:
-                state.gameCells = state.gameCells.map { row in
+                state.game.gameCells = state.game.gameCells.map { row in
                     row.map { cell in
                         GameCell(predefinedValue: cell.predefinedValue)
                     }
@@ -120,7 +119,7 @@ struct GameView: View {
     @State var cellEntries: [CellFramePreferenceKeyEntry] = []
 
     func cellBackgroundColor(_ i: Int, _ j: Int) -> Color {
-        let cell = store.gameCells[i][j]
+        let cell = store.game.gameCells[i][j]
         if let _ = cell.predefinedValue {
             return Color.init(red: 238 / 255.0, green: 234 / 255.0, blue: 232 / 255.0)
         } else {
@@ -129,7 +128,7 @@ struct GameView: View {
     }
 
     func cellValue(_ i: Int, _ j: Int) -> String? {
-        let cell = store.gameCells[i][j]
+        let cell = store.game.gameCells[i][j]
 
         if let value = cell.predefinedValue {
             return value == 0 ? "🌞" : "🌚"
@@ -199,7 +198,7 @@ struct GameView: View {
             .coordinateSpace(name: "grid")
 
             ZStack {
-                ForEach(store.gameConditions) { condition in
+                ForEach(store.game.gameConditions) { condition in
                     let cellA = cellEntries.last(where: { $0.row == condition.cellA.0 && $0.column == condition.cellA.1})
                     let cellB = cellEntries.last(where: { $0.row == condition.cellB.0 && $0.column == condition.cellB.1})
                     if let cellA = cellA, let cellB = cellB {
@@ -286,9 +285,14 @@ struct GameView: View {
 }
 
 #Preview {
-    GameView(store: Store(initialState: GameFeature.State(level: .init(title: "8"), gameCells: level1, gameConditions: level1Conditions)) {
+    let game = Game(gameCells: level1,
+                    gameConditions: level1Conditions)
+    let state = GameFeature.State(level: .init(title: "8"),
+                                  game: game)
+    let store = Store(initialState: state) {
         GameFeature()
-    })
+    }
+    return GameView(store: store)
 }
 
 struct CellFramePreferenceKey: PreferenceKey {
