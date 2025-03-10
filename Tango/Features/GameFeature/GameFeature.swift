@@ -22,6 +22,12 @@ struct Game {
         return isCellsArrayValid(column)
     }
 
+    func isFieldValid() -> Bool {
+        let isRowsValid = (0..<6).map { isRowValid($0) }.allSatisfy { $0 }
+        let isColumnsValid = (0..<6).map { isColumnValid($0) }.allSatisfy { $0 }
+        return isRowsValid && isColumnsValid
+    }
+
     private func isCellsArrayValid(_ cells: [GameCell]) -> Bool {
         let zeros = cells.count { $0.value == 0 }
         let ones = cells.count { $0.value == 1 }
