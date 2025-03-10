@@ -14,8 +14,17 @@ struct Game {
 
     func isRowValid(_ row: Int) -> Bool {
         let row = gameCells[row]
-        let zeros = row.count { $0.value == 0 }
-        let ones = row.count { $0.value == 1 }
+        return isCellsArrayValid(row)
+    }
+
+    func isColumnValid(_ column: Int) -> Bool {
+        let column = gameCells.map { $0[column] }
+        return isCellsArrayValid(column)
+    }
+
+    private func isCellsArrayValid(_ cells: [GameCell]) -> Bool {
+        let zeros = cells.count { $0.value == 0 }
+        let ones = cells.count { $0.value == 1 }
 
         guard
             zeros <= 3,

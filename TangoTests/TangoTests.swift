@@ -49,9 +49,27 @@ struct TangoTests {
         #expect(game.isRowValid(0) == true)
     }
 
-    @Test func row4SunIsInalid() {
+    @Test func row4SunIsInvalid() {
         let game = Game(gameCells: [createRow(with: [0, 0, 0, 0, nil, nil])], gameConditions: [])
         #expect(game.isRowValid(0) == false)
+    }
+
+    @Test func columnsValidity() {
+        let cells: [[GameCell]] = [createRow(with: [1, 1, 0, nil, nil, 1]),
+                                   createRow(with: [1, 1, 0, nil, nil, 1]),
+                                   createRow(with: [1, 0, 1, nil, nil, 1]),
+                                   createRow(with: [0, 0, 1, nil, nil, 1]),
+                                   createRow(with: [0, 0, 1, nil, nil, 1]),
+                                   createRow(with: [0, 0, 1, nil, 1, 1])]
+
+        let game = Game(gameCells: cells, gameConditions: [])
+
+        #expect(game.isColumnValid(0) == true)
+        #expect(game.isColumnValid(1) == false)
+        #expect(game.isColumnValid(2) == false)
+        #expect(game.isColumnValid(3) == true)
+        #expect(game.isColumnValid(4) == true)
+        #expect(game.isColumnValid(5) == false)
     }
 }
 
