@@ -8,6 +8,26 @@
 import SwiftUI
 import ComposableArchitecture
 
+struct Game {
+    var gameCells: [[GameCell]]
+    let gameConditions: [GameCellCondition]
+
+    func isRowValid(_ row: Int) -> Bool {
+        let row = gameCells[row]
+        let zeros = row.count { $0.value == 0 }
+        let ones = row.count { $0.value == 1 }
+
+        guard
+            zeros <= 3,
+            ones <= 3
+        else {
+            return false
+        }
+
+        return true
+    }
+}
+
 @Reducer
 struct GameFeature {
 
