@@ -28,6 +28,11 @@ struct Game {
         return isRowsValid && isColumnsValid
     }
 
+    func isSolved() -> Bool {
+        let isAllCellsFilled = gameCells.flatMap { $0 }.allSatisfy { $0.value != nil || $0.predefinedValue != nil}
+        return isAllCellsFilled && isFieldValid()
+    }
+
     private func isCellsArrayValid(_ cells: [GameCell]) -> Bool {
         let zeros = cells.count { $0.value == 0 }
         let ones = cells.count { $0.value == 1 }

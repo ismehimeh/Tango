@@ -96,7 +96,43 @@ struct TangoTests {
         #expect(game.isFieldValid() == false)
     }
 
-    // TODO: need more tests
+    @Test func emptyFieldIsNotSolved() {
+        let cells: [[GameCell]] = [createRow(with: [nil, nil, nil, nil, nil, nil]),
+                                   createRow(with: [nil, nil, nil, nil, nil, nil]),
+                                   createRow(with: [nil, nil, nil, nil, nil, nil]),
+                                   createRow(with: [nil, nil, nil, nil, nil, nil]),
+                                   createRow(with: [nil, nil, nil, nil, nil, nil]),
+                                   createRow(with: [nil, nil, nil, nil, nil, nil])]
+
+        let game = Game(gameCells: cells, gameConditions: [])
+        #expect(game.isSolved() == false)
+    }
+
+    @Test func invalidFieldIsNotSolved() {
+        let cells: [[GameCell]] = [createRow(with: [0, 0, 0, 0, 0, 0]),
+                                   createRow(with: [0, 0, 0, 0, 0, 0]),
+                                   createRow(with: [0, 0, 0, 0, 0, 0]),
+                                   createRow(with: [0, 0, 0, 0, 0, 0]),
+                                   createRow(with: [0, 0, 0, 0, 0, 0]),
+                                   createRow(with: [0, 0, 0, 0, 0, 0])]
+
+        let game = Game(gameCells: cells, gameConditions: [])
+        #expect(game.isSolved() == false)
+    }
+
+    @Test func fieldIsSolved() {
+        let cells: [[GameCell]] = [createRow(with: [1, 0, 0, 1, 1, 0]),
+                                   createRow(with: [0, 1, 1, 0, 0, 1]),
+                                   createRow(with: [1, 1, 0, 1, 0, 0]),
+                                   createRow(with: [1, 0, 1, 0, 1, 0]),
+                                   createRow(with: [0, 1, 0, 1, 0, 1]),
+                                   createRow(with: [0, 0, 1, 0, 1, 1])]
+
+        let game = Game(gameCells: cells, gameConditions: [])
+        #expect(game.isSolved() == true)
+    }
+
+    // TODO: need more tests?
 }
 
 
