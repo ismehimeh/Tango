@@ -108,6 +108,8 @@ struct GameFeature {
                         GameCell(predefinedValue: cell.predefinedValue)
                     }
                 }
+                state.isMistake = !state.game.isFieldValid()
+                state.isSolved = state.game.isSolved()
                 return .none
             }
         }
