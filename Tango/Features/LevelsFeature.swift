@@ -55,6 +55,19 @@ struct LevelsFeature {
                 let _ = state.path.popLast()
                 state.path.append(.startGame(GameFeature.State(level: nextLevel, game: .init(gameCells: level1, gameConditions: level1Conditions))))
                 return .none
+            case let .path(.element(id: id, action: .startGame(.tapCell(_, _)))):
+                guard
+                    let gameFeature = state.path[id: id]?.startGame
+                else {
+                    return .none
+                }
+
+                guard gameFeature.isSolved else {
+                    return .none
+                }
+
+                state.path.append(.showGameResult(ResultFeature.State(finishedLevel: gameFeature.level)))
+                return .none
             case .path:
                 return .none
             }

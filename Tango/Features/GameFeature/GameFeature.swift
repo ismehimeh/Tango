@@ -43,6 +43,7 @@ struct GameFeature {
 
                 state.isMistake = !state.game.isFieldValid()
                 state.isSolved = state.game.isSolved()
+
                 return .none
             case .tapClear:
                 state.game.gameCells = state.game.gameCells.map { row in
