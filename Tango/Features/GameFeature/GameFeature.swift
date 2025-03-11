@@ -34,14 +34,32 @@ struct Game {
     }
 
     private func isCellsArrayValid(_ cells: [GameCell]) -> Bool {
-        let zeros = cells.count { $0.value == 0 }
+        let zeroes = cells.count { $0.value == 0 }
         let ones = cells.count { $0.value == 1 }
 
         guard
-            zeros <= 3,
+            zeroes <= 3,
             ones <= 3
         else {
             return false
+        }
+
+        var zeroesCount = 0
+        var onesCount = 0
+        for cell in cells {
+            if cell.value == 0 {
+                zeroesCount += 1
+                onesCount = 0
+            }
+            if cell.value == 1 {
+                zeroesCount = 0
+                onesCount += 1
+            }
+            if cell.value == nil {
+                zeroesCount = 0
+                onesCount = 0
+            }
+            guard zeroesCount <= 2 && onesCount <= 2 else { return false }
         }
 
         return true
@@ -55,6 +73,8 @@ struct GameFeature {
     struct State {
         let level: Level
         var game: Game
+        var isMistake = false
+        var isSolved = false
     }
 
     enum Action {
@@ -78,6 +98,9 @@ struct GameFeature {
                 else {
                     state.game.gameCells[i][j].value = nil
                 }
+
+                state.isMistake = !state.game.isFieldValid()
+                state.isSolved = state.game.isSolved()
                 return .none
             case .tapClear:
                 state.game.gameCells = state.game.gameCells.map { row in
@@ -93,11 +116,21 @@ struct GameFeature {
 
 struct GameCell {
     let predefinedValue: Int?
-    var value: Int?
+    private var _value: Int?
+    
+    var value: Int? {
+        get {
+            predefinedValue ?? _value
+        }
+
+        set {
+            _value = newValue
+        }
+    }
 
     init(predefinedValue: Int? = nil, value: Int? = nil) {
         self.predefinedValue = predefinedValue
-        self.value = value
+        self._value = value
     }
 }
 
@@ -208,6 +241,16 @@ struct GameView: View {
                             .position(midPoint)
                     }
                 }
+            }
+        }
+        .overlay {
+            if store.isMistake {
+                Color.red.opacity(0.1)
+                    .allowsHitTesting(false)
+            }
+            if store.isSolved {
+                Color.green.opacity(0.1)
+                    .allowsHitTesting(false)
             }
         }
     }

@@ -39,9 +39,9 @@ struct TangoTests {
         #expect(game.isRowValid(0) == false)
     }
 
-    @Test func row3Suns3MoonsIsValid() {
+    @Test func row3Suns3MoonsIsInvalid() {
         let game = Game(gameCells: [createRow(with: [0, 0, 0, 1, 1, 1])], gameConditions: [])
-        #expect(game.isRowValid(0) == true)
+        #expect(game.isRowValid(0) == false)
     }
 
     @Test func row1SunIsValid() {
@@ -51,6 +51,16 @@ struct TangoTests {
 
     @Test func row4SunIsInvalid() {
         let game = Game(gameCells: [createRow(with: [0, 0, 0, 0, nil, nil])], gameConditions: [])
+        #expect(game.isRowValid(0) == false)
+    }
+
+    @Test func row4MoonsIsInvalid() {
+        let game = Game(gameCells: [createRow(with: [1, 1, 1, 1, nil, nil])], gameConditions: [])
+        #expect(game.isRowValid(0) == false)
+    }
+
+    @Test func row3MoonsIsInvalid() {
+        let game = Game(gameCells: [createRow(with: [1, 1, 1, nil, nil, nil])], gameConditions: [])
         #expect(game.isRowValid(0) == false)
     }
 
@@ -64,7 +74,7 @@ struct TangoTests {
 
         let game = Game(gameCells: cells, gameConditions: [])
 
-        #expect(game.isColumnValid(0) == true)
+        #expect(game.isColumnValid(0) == false)
         #expect(game.isColumnValid(1) == false)
         #expect(game.isColumnValid(2) == false)
         #expect(game.isColumnValid(3) == true)
@@ -133,6 +143,21 @@ struct TangoTests {
     }
 
     // TODO: need more tests?
+
+    @Test func invalidRowOfPredefinedValuesIsInvalid() {
+        let cell = GameCell(predefinedValue: 0)
+        let nilCell = GameCell(value: nil)
+        let game = Game(gameCells: [[cell, cell, cell, nilCell, nilCell, nilCell]], gameConditions: [])
+        #expect(game.isRowValid(0) == false)
+    }
+
+    @Test func twoSunsNilSunIsValid() {
+        let predifinedCell = GameCell(predefinedValue: 0)
+        let cell = GameCell(value: 0)
+        let nilCell = GameCell(value: nil)
+        let game = Game(gameCells: [[cell, cell, nilCell, predifinedCell, nilCell, nilCell]], gameConditions: [])
+        #expect(game.isRowValid(0) == true)
+    }
 }
 
 
