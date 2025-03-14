@@ -6,8 +6,17 @@
 //
 
 struct Game {
+
+    let level: Level
     var gameCells: [[GameCell]]
-    let gameConditions: [GameCellCondition]
+    var gameConditions: [GameCellCondition] {
+        level.gameConditions
+    }
+
+    init(_ level: Level) {
+        self.level = level
+        gameCells = level.gameCells
+    }
 
     func isRowValid(_ row: Int) -> Bool {
         let rowArray = gameCells[row]
