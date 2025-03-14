@@ -198,9 +198,9 @@ struct GameView: View {
 }
 
 #Preview {
-    let game = Game(gameCells: level1,
+    let game = Game(gameCells: level1Cells,
                     gameConditions: level1Conditions)
-    let state = GameFeature.State(level: .init(title: "8"),
+    let state = GameFeature.State(level: level1,
                                   game: game)
     let store = Store(initialState: state) {
         GameFeature()

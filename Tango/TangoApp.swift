@@ -11,9 +11,7 @@ import ComposableArchitecture
 @main
 struct TangoApp: App {
 
-    static let store = Store(initialState: LevelsFeature.State(levels: [Level(title: "1"),
-                                                                        Level(title: "2"),
-                                                                        Level(title: "3")]))
+    static let store = Store(initialState: LevelsFeature.State(levels: [level1]))
     {
         LevelsFeature()
     }
