@@ -158,6 +158,40 @@ struct TangoTests {
         let game = Game(gameCells: [[cell, cell, nilCell, predifinedCell, nilCell, nilCell]], gameConditions: [])
         #expect(game.isRowValid(0) == true)
     }
+
+    @Test func rowWithViolatedXConditionIsInvalid() {
+        let predifinedCell1 = GameCell(predefinedValue: 0)
+        let nilCell = GameCell(value: nil)
+        let condition = GameCellCondition(condition: .opposite, cellA: (0, 0), cellB: (0, 1))
+        let game = Game(gameCells: [[predifinedCell1, predifinedCell1, nilCell, nilCell, nilCell]], gameConditions: [condition])
+        #expect(game.isRowValid(0) == false)
+    }
+
+    @Test func rowWithViolatedEqualConditionIsInvalid() {
+        let predifinedCell1 = GameCell(predefinedValue: 0)
+        let predifinedCell2 = GameCell(predefinedValue: 1)
+        let nilCell = GameCell(value: nil)
+        let condition = GameCellCondition(condition: .equal, cellA: (0, 0), cellB: (0, 1))
+        let game = Game(gameCells: [[predifinedCell1, predifinedCell2, nilCell, nilCell, nilCell]], gameConditions: [condition])
+        #expect(game.isRowValid(0) == false)
+    }
+
+    @Test func rowWithNotViolatedXConditionIsValid() {
+        let predifinedCell1 = GameCell(predefinedValue: 0)
+        let predifinedCell2 = GameCell(predefinedValue: 1)
+        let nilCell = GameCell(value: nil)
+        let condition = GameCellCondition(condition: .opposite, cellA: (0, 0), cellB: (0, 1))
+        let game = Game(gameCells: [[predifinedCell1, predifinedCell2, nilCell, nilCell, nilCell]], gameConditions: [condition])
+        #expect(game.isRowValid(0) == true)
+    }
+
+    @Test func rowWithNotViolatedEqualConditionIsValid() {
+        let predifinedCell1 = GameCell(predefinedValue: 0)
+        let nilCell = GameCell(value: nil)
+        let condition = GameCellCondition(condition: .equal, cellA: (0, 0), cellB: (0, 1))
+        let game = Game(gameCells: [[predifinedCell1, predifinedCell1, nilCell, nilCell, nilCell]], gameConditions: [condition])
+        #expect(game.isRowValid(0) == true)
+    }
 }
 
 

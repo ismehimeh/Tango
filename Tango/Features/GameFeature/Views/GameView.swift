@@ -91,11 +91,11 @@ struct GameView: View {
         }
         .overlay {
             if store.isMistake {
-                Color.red.opacity(0.1)
+                Color.red.opacity(0.2)
                     .allowsHitTesting(false)
             }
             if store.isSolved {
-                Color.green.opacity(0.1)
+                Color.green.opacity(0.2)
                     .allowsHitTesting(false)
             }
         }

@@ -10,13 +10,17 @@ struct Game {
     let gameConditions: [GameCellCondition]
 
     func isRowValid(_ row: Int) -> Bool {
-        let row = gameCells[row]
-        return isCellsArrayValid(row)
+        let rowArray = gameCells[row]
+        let conditions = gameConditions.filter { $0.cellA.0 == row && $0.cellB.0 == row}
+        return isCellsArrayValid(rowArray, conditions)
     }
 
     func isColumnValid(_ column: Int) -> Bool {
-        let column = gameCells.map { $0[column] }
-        return isCellsArrayValid(column)
+        let columnArray = gameCells.map { $0[column] }
+        let conditions = gameConditions
+            .filter { $0.cellA.1 == column && $0.cellB.1 == column}
+            .map { GameCellCondition(condition: $0.condition, cellA: ($0.cellA.1, $0.cellA.0), cellB: ($0.cellB.1, $0.cellB.0)) }
+        return isCellsArrayValid(columnArray, conditions)
     }
 
     func isFieldValid() -> Bool {
@@ -30,10 +34,11 @@ struct Game {
         return isAllCellsFilled && isFieldValid()
     }
 
-    private func isCellsArrayValid(_ cells: [GameCell]) -> Bool {
+    private func isCellsArrayValid(_ cells: [GameCell], _ conditions: [GameCellCondition]) -> Bool {
         let zeroes = cells.count { $0.value == 0 }
         let ones = cells.count { $0.value == 1 }
 
+        // count of 0 and 1
         guard
             zeroes <= 3,
             ones <= 3
@@ -41,6 +46,7 @@ struct Game {
             return false
         }
 
+        // no more than 2 after each other
         var zeroesCount = 0
         var onesCount = 0
         for cell in cells {
@@ -57,6 +63,21 @@ struct Game {
                 onesCount = 0
             }
             guard zeroesCount <= 2 && onesCount <= 2 else { return false }
+        }
+
+        // check conditions
+        for condition in conditions {
+            let cellA = cells[condition.cellA.1]
+            let cellB = cells[condition.cellB.1]
+            guard cellA.value != nil && cellB.value != nil else { continue }
+
+            if condition.condition == .equal && cellA.value != cellB.value {
+                return false
+            }
+
+            if condition.condition == .opposite && cellA.value == cellB.value {
+                return false
+            }
         }
 
         return true
