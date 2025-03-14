@@ -13,7 +13,6 @@ struct GameFeature {
 
     @ObservableState
     struct State {
-        let level: Level
         var game: Game
         var isMistake = false
         var isSolved = false
