@@ -46,6 +46,7 @@ struct GameView: View {
             .buttonStyle(.bordered)
             .buttonBorderShape(.capsule)
         }
+        .alert($store.scope(state: \.alert, action: \.alert))
     }
 
     var gameFieldView: some View {

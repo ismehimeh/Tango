@@ -13,6 +13,7 @@ struct GameFeature {
 
     @ObservableState
     struct State {
+        @Presents var alert: AlertState<Action.Alert>?
         var game: Game
         var isMistake = false
         var isSolved = false
@@ -21,8 +22,13 @@ struct GameFeature {
     enum Action {
         case tapCell(Int, Int)
         case tapClear
+        case alert(PresentationAction<Alert>)
+        enum Alert {
+            case confirmClear
+        }
     }
 
+    @Dependency(\.dismiss) var dismiss
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
@@ -45,6 +51,10 @@ struct GameFeature {
 
                 return .none
             case .tapClear:
+                state.alert = .confirmClear
+                return .none
+
+            case .alert(.presented(.confirmClear)):
                 state.game.gameCells = state.game.gameCells.map { row in
                     row.map { cell in
                         GameCell(predefinedValue: cell.predefinedValue)
@@ -53,7 +63,22 @@ struct GameFeature {
                 state.isMistake = !state.game.isFieldValid()
                 state.isSolved = state.game.isSolved()
                 return .none
+            case .alert:
+                return .none
             }
+        }
+        .ifLet(\.$alert, action: \.alert)
+    }
+}
+
+
+extension AlertState where Action == GameFeature.Action.Alert {
+
+    static let confirmClear = Self {
+        TextState("You sure?")
+    } actions: {
+        ButtonState(role: .destructive, action: .confirmClear) {
+            TextState("Clear")
         }
     }
 }
