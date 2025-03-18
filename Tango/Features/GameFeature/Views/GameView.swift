@@ -30,12 +30,15 @@ struct GameView: View {
             }
             .padding(.horizontal, 15)
         }
+        .onAppear {
+            store.send(.startTimer)
+        }
     }
 
     var topView: some View {
         HStack {
             Image(systemName: "clock")
-            Text("0:01")
+            Text(store.timeString)
             Spacer()
             Button {
                 store.send(.tapClear)

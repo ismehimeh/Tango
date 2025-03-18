@@ -17,18 +17,27 @@ struct GameFeature {
         var game: Game
         var isMistake = false
         var isSolved = false
+        var secondsPassed = 0 {
+            didSet {
+                timeString = String(format: "%01d:%02d", secondsPassed / 60, secondsPassed % 60)
+            }
+        }
+        var timeString = "0:00"
     }
 
     enum Action {
         case tapCell(Int, Int)
         case tapClear
         case alert(PresentationAction<Alert>)
+        case startTimer
+        case timerUpdated
         enum Alert {
             case confirmClear
         }
     }
 
     @Dependency(\.dismiss) var dismiss
+    @Dependency(\.continuousClock) var clock
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
@@ -64,6 +73,15 @@ struct GameFeature {
                 state.isSolved = state.game.isSolved()
                 return .none
             case .alert:
+                return .none
+            case .startTimer:
+                return .run { send in
+                    for await _ in self.clock.timer(interval: .seconds(1)) {
+                        await send(.timerUpdated)
+                    }
+                }
+            case .timerUpdated:
+                state.secondsPassed += 1
                 return .none
             }
         }
