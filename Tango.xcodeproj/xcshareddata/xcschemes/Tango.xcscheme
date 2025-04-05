@@ -41,25 +41,6 @@
                ReferencedContainer = "container:Tango.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "YES"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "1B7C9BCA2D75945500E260A6"
-               BuildableName = "TangoUITests.xctest"
-               BlueprintName = "TangoUITests"
-               ReferencedContainer = "container:Tango.xcodeproj">
-            </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "TangoUITests">
-               </Test>
-               <Test
-                  Identifier = "TangoUITestsLaunchTests">
-               </Test>
-            </SkippedTests>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
