@@ -9,58 +9,79 @@ import Testing
 @testable import Tango
 
 struct TangoTests {
+    
+    func createTestLevel(cells: [[GameCell]], conditions: [GameCellCondition] = []) -> Level {
+        Level(title: "1", gameCells: cells, gameConditions: conditions)
+    }
 
     @Test func example() async throws {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
     }
 
-    @Test func emptyRowValid() {
-        let game = Game(gameCells: [Array(repeating: GameCell(), count: 6)], gameConditions: [])
+    @Test func emptyRowValid() {
+        let level = createTestLevel(cells: [Array(repeating: GameCell(), count: 6)])
+        let game = Game(level)
         #expect(game.isRowValid(0) == true)
     }
 
     @Test func rowFullOfSunsIsInvalid() {
-        let game = Game(gameCells: [Array(repeating: GameCell(value: 0), count: 6)], gameConditions: [])
+        let level = createTestLevel(cells: [Array(repeating: GameCell(value: 0), count: 6)])
+        let game = Game(level)
         #expect(game.isRowValid(0) == false)
     }
 
     @Test func rowFullOfMoonsIsInvalid() {
-        let game = Game(gameCells: [Array(repeating: GameCell(value: 1), count: 6)], gameConditions: [])
+        let level = createTestLevel(cells: [Array(repeating: GameCell(value: 1), count: 6)])
+        let game = Game(level)
         #expect(game.isRowValid(0) == false)
     }
 
     @Test func row4Suns2MoonsIsInvalid() {
-        let game = Game(gameCells: [createRow(with: [1, 1, 0, 0, 0, 0])], gameConditions: [])
+        let cells = [createRow(with: [1, 1, 0, 0, 0, 0])]
+        let level = createTestLevel(cells: cells)
+        let game = Game(level)
         #expect(game.isRowValid(0) == false)
     }
 
     @Test func row2Suns4MoonsIsInvalid() {
-        let game = Game(gameCells: [createRow(with: [0, 0, 1, 1, 1, 1])], gameConditions: [])
+        let cells = [createRow(with: [0, 0, 1, 1, 1, 1])]
+        let level = createTestLevel(cells: cells)
+        let game = Game(level)
         #expect(game.isRowValid(0) == false)
     }
 
     @Test func row3Suns3MoonsIsInvalid() {
-        let game = Game(gameCells: [createRow(with: [0, 0, 0, 1, 1, 1])], gameConditions: [])
+        let cells = [createRow(with: [0, 0, 0, 1, 1, 1])]
+        let level = createTestLevel(cells: cells)
+        let game = Game(level)
         #expect(game.isRowValid(0) == false)
     }
 
     @Test func row1SunIsValid() {
-        let game = Game(gameCells: [createRow(with: [0, nil, nil, nil, nil, nil])], gameConditions: [])
+        let cells = [createRow(with: [0, nil, nil, nil, nil, nil])]
+        let level = createTestLevel(cells: cells)
+        let game = Game(level)
         #expect(game.isRowValid(0) == true)
     }
 
     @Test func row4SunIsInvalid() {
-        let game = Game(gameCells: [createRow(with: [0, 0, 0, 0, nil, nil])], gameConditions: [])
+        let cells = [createRow(with: [0, 0, 0, 0, nil, nil])]
+        let level = createTestLevel(cells: cells)
+        let game = Game(level)
         #expect(game.isRowValid(0) == false)
     }
 
     @Test func row4MoonsIsInvalid() {
-        let game = Game(gameCells: [createRow(with: [1, 1, 1, 1, nil, nil])], gameConditions: [])
+        let cells = [createRow(with: [1, 1, 1, 1, nil, nil])]
+        let level = createTestLevel(cells: cells)
+        let game = Game(level)
         #expect(game.isRowValid(0) == false)
     }
 
     @Test func row3MoonsIsInvalid() {
-        let game = Game(gameCells: [createRow(with: [1, 1, 1, nil, nil, nil])], gameConditions: [])
+        let cells = [createRow(with: [1, 1, 1, nil, nil, nil])]
+        let level = createTestLevel(cells: cells)
+        let game = Game(level)
         #expect(game.isRowValid(0) == false)
     }
 
@@ -72,7 +93,8 @@ struct TangoTests {
                                    createRow(with: [0, 0, 1, nil, nil, 1]),
                                    createRow(with: [0, 0, 1, nil, 1, 1])]
 
-        let game = Game(gameCells: cells, gameConditions: [])
+        let level = createTestLevel(cells: cells)
+        let game = Game(level)
 
         #expect(game.isColumnValid(0) == false)
         #expect(game.isColumnValid(1) == false)
@@ -90,7 +112,8 @@ struct TangoTests {
                                    createRow(with: [nil, nil, nil, nil, nil, nil]),
                                    createRow(with: [nil, nil, nil, nil, nil, nil])]
 
-        let game = Game(gameCells: cells, gameConditions: [])
+        let level = createTestLevel(cells: cells)
+        let game = Game(level)
         #expect(game.isFieldValid() == true)
     }
 
@@ -102,7 +125,8 @@ struct TangoTests {
                                    createRow(with: [0, 0, 0, 0, 0, 0]),
                                    createRow(with: [0, 0, 0, 0, 0, 0])]
 
-        let game = Game(gameCells: cells, gameConditions: [])
+        let level = createTestLevel(cells: cells)
+        let game = Game(level)
         #expect(game.isFieldValid() == false)
     }
 
@@ -114,7 +138,8 @@ struct TangoTests {
                                    createRow(with: [nil, nil, nil, nil, nil, nil]),
                                    createRow(with: [nil, nil, nil, nil, nil, nil])]
 
-        let game = Game(gameCells: cells, gameConditions: [])
+        let level = createTestLevel(cells: cells)
+        let game = Game(level)
         #expect(game.isSolved() == false)
     }
 
@@ -126,7 +151,8 @@ struct TangoTests {
                                    createRow(with: [0, 0, 0, 0, 0, 0]),
                                    createRow(with: [0, 0, 0, 0, 0, 0])]
 
-        let game = Game(gameCells: cells, gameConditions: [])
+        let level = createTestLevel(cells: cells)
+        let game = Game(level)
         #expect(game.isSolved() == false)
     }
 
@@ -138,16 +164,16 @@ struct TangoTests {
                                    createRow(with: [0, 1, 0, 1, 0, 1]),
                                    createRow(with: [0, 0, 1, 0, 1, 1])]
 
-        let game = Game(gameCells: cells, gameConditions: [])
+        let level = createTestLevel(cells: cells)
+        let game = Game(level)
         #expect(game.isSolved() == true)
     }
-
-    // TODO: need more tests?
 
     @Test func invalidRowOfPredefinedValuesIsInvalid() {
         let cell = GameCell(predefinedValue: 0)
         let nilCell = GameCell(value: nil)
-        let game = Game(gameCells: [[cell, cell, cell, nilCell, nilCell, nilCell]], gameConditions: [])
+        let level = createTestLevel(cells: [[cell, cell, cell, nilCell, nilCell, nilCell]])
+        let game = Game(level)
         #expect(game.isRowValid(0) == false)
     }
 
@@ -155,7 +181,8 @@ struct TangoTests {
         let predifinedCell = GameCell(predefinedValue: 0)
         let cell = GameCell(value: 0)
         let nilCell = GameCell(value: nil)
-        let game = Game(gameCells: [[cell, cell, nilCell, predifinedCell, nilCell, nilCell]], gameConditions: [])
+        let level = createTestLevel(cells: [[cell, cell, nilCell, predifinedCell, nilCell, nilCell]])
+        let game = Game(level)
         #expect(game.isRowValid(0) == true)
     }
 
@@ -163,7 +190,8 @@ struct TangoTests {
         let predifinedCell1 = GameCell(predefinedValue: 0)
         let nilCell = GameCell(value: nil)
         let condition = GameCellCondition(condition: .opposite, cellA: (0, 0), cellB: (0, 1))
-        let game = Game(gameCells: [[predifinedCell1, predifinedCell1, nilCell, nilCell, nilCell]], gameConditions: [condition])
+        let level = createTestLevel(cells: [[predifinedCell1, predifinedCell1, nilCell, nilCell, nilCell]], conditions: [condition])
+        let game = Game(level)
         #expect(game.isRowValid(0) == false)
     }
 
@@ -172,7 +200,8 @@ struct TangoTests {
         let predifinedCell2 = GameCell(predefinedValue: 1)
         let nilCell = GameCell(value: nil)
         let condition = GameCellCondition(condition: .equal, cellA: (0, 0), cellB: (0, 1))
-        let game = Game(gameCells: [[predifinedCell1, predifinedCell2, nilCell, nilCell, nilCell]], gameConditions: [condition])
+        let level = createTestLevel(cells: [[predifinedCell1, predifinedCell2, nilCell, nilCell, nilCell]], conditions: [condition])
+        let game = Game(level)
         #expect(game.isRowValid(0) == false)
     }
 
@@ -181,7 +210,8 @@ struct TangoTests {
         let predifinedCell2 = GameCell(predefinedValue: 1)
         let nilCell = GameCell(value: nil)
         let condition = GameCellCondition(condition: .opposite, cellA: (0, 0), cellB: (0, 1))
-        let game = Game(gameCells: [[predifinedCell1, predifinedCell2, nilCell, nilCell, nilCell]], gameConditions: [condition])
+        let level = createTestLevel(cells: [[predifinedCell1, predifinedCell2, nilCell, nilCell, nilCell]], conditions: [condition])
+        let game = Game(level)
         #expect(game.isRowValid(0) == true)
     }
 
@@ -189,15 +219,14 @@ struct TangoTests {
         let predifinedCell1 = GameCell(predefinedValue: 0)
         let nilCell = GameCell(value: nil)
         let condition = GameCellCondition(condition: .equal, cellA: (0, 0), cellB: (0, 1))
-        let game = Game(gameCells: [[predifinedCell1, predifinedCell1, nilCell, nilCell, nilCell]], gameConditions: [condition])
+        let level = createTestLevel(cells: [[predifinedCell1, predifinedCell1, nilCell, nilCell, nilCell]], conditions: [condition])
+        let game = Game(level)
         #expect(game.isRowValid(0) == true)
     }
 }
 
-
-//let testLevel: [[GameCell]] = Array(repeating: Array(repeating: GameCell(), count: 6), count: 6)
-
-
-func createRow(with values: [Int?]) -> [GameCell] {
-    values.map { GameCell(value: $0) }
+private extension TangoTests {
+    func createRow(with values: [Int?]) -> [GameCell] {
+        values.map { GameCell(value: $0) }
+    }
 }
