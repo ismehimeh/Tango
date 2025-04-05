@@ -23,6 +23,7 @@ struct GameFeature {
             }
         }
         var timeString = "0:00"
+        var mistakeValidationID: UUID?
     }
 
     enum Action {
@@ -31,6 +32,7 @@ struct GameFeature {
         case alert(PresentationAction<Alert>)
         case startTimer
         case timerUpdated
+        case validateMistake(UUID)
         enum Alert {
             case confirmClear
         }
@@ -54,10 +56,18 @@ struct GameFeature {
                 else {
                     state.game.gameCells[i][j].value = nil
                 }
-
+                
+                let mistakeId = UUID()
+                state.mistakeValidationID = mistakeId
+                state.isMistake = false
+                
+                return .run { send in
+                    try await Task.sleep(for: .seconds(1))
+                    await send(.validateMistake(mistakeId))
+                }
+            case let .validateMistake(id):
+                guard id == state.mistakeValidationID else { return .none }
                 state.isMistake = !state.game.isFieldValid()
-                state.isSolved = state.game.isSolved()
-
                 return .none
             case .tapClear:
                 state.alert = .confirmClear
