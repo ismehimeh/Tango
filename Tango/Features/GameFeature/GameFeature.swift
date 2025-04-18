@@ -60,6 +60,7 @@ struct GameFeature {
                 let mistakeId = UUID()
                 state.mistakeValidationID = mistakeId
                 state.isMistake = false
+                state.isSolved = state.game.isSolved()
                 
                 return .run { send in
                     try await Task.sleep(for: .seconds(1))
