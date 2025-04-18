@@ -30,8 +30,20 @@ struct GameView: View {
             }
             .padding(.horizontal, 15)
         }
+        .toolbar {
+            Button {
+                store.send(.tapSettings)
+            } label: {
+                Image(systemName: "gearshape.fill")
+            }
+        }
         .onAppear {
             store.send(.startTimer)
+        }
+        .sheet(item: $store.scope(state: \.settings, action: \.settings)){ settingsStore in
+            SettingsView(store: settingsStore)
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
     }
 
@@ -207,7 +219,9 @@ struct GameView: View {
     let store = Store(initialState: state) {
         GameFeature()
     }
-    return GameView(store: store)
+    return NavigationStack {
+        GameView(store: store)
+    }
 }
 
 struct CellFramePreferenceKey: PreferenceKey {

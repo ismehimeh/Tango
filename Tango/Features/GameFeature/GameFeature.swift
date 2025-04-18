@@ -14,6 +14,7 @@ struct GameFeature {
     @ObservableState
     struct State {
         @Presents var alert: AlertState<Action.Alert>?
+        @Presents var settings: SettingsFeature.State?
         var game: Game
         var isMistake = false
         var isSolved = false
@@ -29,6 +30,8 @@ struct GameFeature {
     enum Action {
         case tapCell(Int, Int)
         case tapClear
+        case tapSettings
+        case settings(PresentationAction<SettingsFeature.Action>)
         case alert(PresentationAction<Alert>)
         case startTimer
         case timerUpdated
@@ -73,7 +76,11 @@ struct GameFeature {
             case .tapClear:
                 state.alert = .confirmClear
                 return .none
-
+            case .tapSettings:
+                state.settings = SettingsFeature.State()
+                return .none
+            case .settings:
+                return .none
             case .alert(.presented(.confirmClear)):
                 state.game.gameCells = state.game.gameCells.map { row in
                     row.map { cell in
@@ -97,6 +104,9 @@ struct GameFeature {
             }
         }
         .ifLet(\.$alert, action: \.alert)
+        .ifLet(\.$settings, action: \.settings) {
+            SettingsFeature()
+        }
     }
 }
 

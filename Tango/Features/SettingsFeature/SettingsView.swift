@@ -19,6 +19,7 @@ struct SettingsView: View {
             Toggle("", isOn: $store.isShowClockIsOn.sending(\.isShowClockIsOnChanged))
         }
         .padding(.horizontal, 20)
+        .padding(.top, 40)
         
         HStack {
             Label("Auto-check", systemImage: "checkmark.seal.fill")
@@ -26,6 +27,8 @@ struct SettingsView: View {
             Toggle("", isOn: $store.isAutoCheckInOn.sending(\.isAutoCheckInOnChanged))
         }
         .padding(.horizontal, 20)
+        
+        Spacer()
     }
 }
 
