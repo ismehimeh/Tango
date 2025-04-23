@@ -49,8 +49,10 @@ struct GameView: View {
 
     var topView: some View {
         HStack {
-            Image(systemName: "clock")
-            Text(store.timeString)
+            if store.isClockVisible {
+                Image(systemName: "clock")
+                Text(store.timeString)
+            }
             Spacer()
             Button {
                 store.send(.tapClear)
@@ -106,7 +108,7 @@ struct GameView: View {
             }
         }
         .overlay {
-            if store.isMistake {
+            if store.isMistake && store.isMistakesVisible {
                 Color.red.opacity(0.2)
                     .allowsHitTesting(false)
             }

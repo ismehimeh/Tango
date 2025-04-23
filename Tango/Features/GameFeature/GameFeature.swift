@@ -25,6 +25,8 @@ struct GameFeature {
         }
         var timeString = "0:00"
         var mistakeValidationID: UUID?
+        var isClockVisible = GameSettings.shared.showClock
+        var isMistakesVisible = GameSettings.shared.autoCheck
     }
 
     enum Action {
@@ -79,7 +81,13 @@ struct GameFeature {
             case .tapSettings:
                 state.settings = SettingsFeature.State()
                 return .none
-            case .settings:
+            case .settings(.presented(.isAutoCheckInOnChanged(let value))):
+                state.isMistakesVisible = value
+                return .none
+            case .settings(.dismiss):
+                return .none
+            case .settings(.presented(.isShowClockIsOnChanged(let value))):
+                state.isClockVisible = value
                 return .none
             case .alert(.presented(.confirmClear)):
                 state.game.gameCells = state.game.gameCells.map { row in

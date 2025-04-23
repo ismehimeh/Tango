@@ -13,8 +13,8 @@ struct SettingsFeature {
     
     @ObservableState
     struct State {
-        var isShowClockIsOn = true
-        var isAutoCheckInOn = true
+        var isShowClockIsOn = GameSettings.shared.showClock
+        var isAutoCheckInOn = GameSettings.shared.autoCheck
     }
     
     enum Action {
@@ -27,9 +27,11 @@ struct SettingsFeature {
             switch action {
             case .isShowClockIsOnChanged(let value):
                 state.isShowClockIsOn = value
+                GameSettings.shared.showClock = value
                 return .none
             case .isAutoCheckInOnChanged(let value):
                 state.isAutoCheckInOn = value
+                GameSettings.shared.autoCheck = value
                 return .none
             }
         }
